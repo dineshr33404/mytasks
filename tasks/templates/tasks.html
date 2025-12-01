@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+mytasks
+</title>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+<h2>Welcome</h2>
+
+<nav>
+<ul>
+<li>{% if request.user.is_superuser %}
+<a href="userList">View All Users</a><br>
+{% endif %}</li>
+<li><a href='taskForm'>Create new tasks</a></li>
+<li><a href="logout">logout</a></li>
+</ul>
+</nav>
+
+<table id = "tableId">
+<tr><th>Title</th><th>Due Date</th><th>Status</th><th>version</th><th>Action</th></tr>
+{% for data in fetchData %}
+<tr id="{{data.id}}"><td>{{data.title}}</td><td>{{data.due_date}}</td><td>{{data.status}}</td><td>{{data.version}}</td><td> <a data-id="{{data.id}}" href="task/edit/{{data.id}}">Edit</a><br> <a data-id="{{data.id}}" data-delete="{{data.is_deleted}}" href="#" class="delete-task"> {% if data.is_deleted %} Revert {% else %} Delete {% endif %}</a> </td></tr>
+{% endfor %}
+</table><br>
+
+<div class="pagination">
+    {% if fetchData.has_previous %}
+        <a href="?page={{ fetchData.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span>Page {{ fetchData.number }} of {{ fetchData.paginator.num_pages }}</span>
+
+    {% if fetchData.has_next %}
+        <a href="?page={{ fetchData.next_page_number }}">Next</a>
+    {% endif %}
+
+</div>
+
+<form id="deleteForm" style="display:none" method="post" action="deleteTask">
+{% csrf_token %}
+<p id="deleteMessage"></p>
+<input type="hidden" name="delete" id = "delete" value= "true">
+<input type="hidden" id="task_id" name="task_id" value="0">
+<input type="submit" name="submit" value="OK">
+<input type="submit" id="cancel" name="submit" value = "Cancel">
+</form><br>
+
+<p>{{message}}</p>
+</body>
+</html>
+
+<script>
+$(document).ready(function() {
+$('.delete-task').click(function(e) {
+        e.preventDefault(); 
+        var taskId = $(this).data('id');        // data-id
+        var deleteing = $(this).data('delete');  // data-delete
+        $('#task_id').val(taskId);
+        $('#delete').val(deleteing);
+if(deleteing) {
+        $('#deleteMessage').html('would you like to delete this tasks?');
+} else {
+        $('#deleteMessage').html('Would you like to Revert this tasks?');
+}
+$('#tableId').hide();
+$('.pagination').hide();
+$('#deleteForm').show();
+alert('a');
+});
+});
+</script>

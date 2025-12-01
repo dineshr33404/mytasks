@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+mytasks
+</title>
+</head>
+<body>
+<nav>
+<ul>
+<li><a href='taskList'>My tasks</a></li>
+<li><a href="logout">logout</a></li>
+</ul>
+</nav><br>
+<form method="post" action="{% url 'createTask' %}">
+    {% csrf_token %}
+<label for="title"> title </label><br>
+<input type = "text" id = "title" name="title" value="{{data.title}}" required><br>
+<label for="description"> description </label><br>
+<input id="description" name="description" value="{{data.description}}" required><br>
+<label for = "due_date"> due date </label><br>
+<input type="date" id="due_date" name="due_date" value="{{ data.due_date|date:'Y-m-d' }}" required>
+<label for="dropdown"> Priority </label>
+<select id = "dropdown" name="dropdown">
+<option {% if data.priority == "Low" %} selected {% endif %} value="Low">Low</option>
+<option {% if data.priority == "Meadiam" %} selected {% endif %} value="Mediam">Mediam</option>
+<option {% if data.priority == "High" %} selected {% endif %} value="High">High</option>
+</select><br>
+{% if data.is_completed == 0 %}
+<input type="checkbox" id="complete" name="complete" value = "1">is completed</br>
+<input type="hidden" name="id" value="{{data.id}}">
+{% endif %}
+<input type="submit" value="done">
+</form>
+
+
+<p>{{message}}</p>
+</body>
+</html>

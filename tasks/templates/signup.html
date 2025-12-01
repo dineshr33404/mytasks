@@ -1,0 +1,29 @@
+<!DOCTYPEhtml>
+<html>
+<head>
+<title>
+Signup
+</title>
+</head>
+<body>
+<h2> please fill the bellow fields to register your account</h2><br>
+<form method="POST" action="/register">
+        {% csrf_token %}
+<label for = "name"> name </label><br>
+<input type = "text" id="name" name = "name" required><br>
+<label for = "email"> email </label><br>
+<input type="email" id="email" name="email" required><br>
+<label for="password"> password </label><br>
+<input type="password" id="password" name="password" required><br>
+<label for="confirm_password"> Confirm password </p><br>
+<input type="password" id="confirm_password" name="confirm_password" required><br>
+
+<input type="submit" value="register">
+</form>
+<p>If you already have an account<br>
+    <a href="login"> Login Here</a></p> 
+
+<p id="message">{{message}}</p>
+</body>
+</html>
+

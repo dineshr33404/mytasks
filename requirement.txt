@@ -1,0 +1,2 @@
+
+pip install Django psycopg2-binary

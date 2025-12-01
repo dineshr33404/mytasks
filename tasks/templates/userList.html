@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+User List
+</title>
+</head>
+<body>
+<h1> list all users</h1>
+<ul>
+{% for data in fetchData %}
+<li><a href="{% url 'viewUserTasks' data.id %}">{{data.username}}</a></li>
+{% endfor %}
+</ul>
+
+<div class="pagination">
+    {% if fetchData.has_previous %}
+        <a href="?page={{ fetchData.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span>Page {{ fetchData.number }} of {{ fetchData.paginator.num_pages }}</span>
+
+    {% if fetchData.has_next %}
+        <a href="?page={{ fetchData.next_page_number }}">Next</a>
+    {% endif %}
+
+</div>
+<p id="message"></p>
+</body>
+</html>

@@ -146,7 +146,7 @@ def viewUserTasks(request, id):
     try:
         if not request.user.is_superuser:
             return render(request, 'login.html', {'message', 'Something whent wrong, please login again'})
-        request.session['storageId'] = id
+        request.session['storeId'] = id
         return redirect('taskList')
     except Exception as e:
         return render(request, 'userList.html', {'message': e})

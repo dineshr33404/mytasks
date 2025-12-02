@@ -28,7 +28,7 @@ mytasks
 <option {% if data.priority  == "2" %} selected {% endif %} value="2">Medium</option>
 <option {% if data.priority == "3" %} selected {% endif %} value="3">High</option>
 </select><br>
-{% if data.is_completed == 0 %}
+{% if not data.is_completed %}
 <input type="checkbox" id="complete" name="complete" value = "1">is completed</br>
 <input type="hidden" name="id" value="{{data.id}}">
 {% endif %}

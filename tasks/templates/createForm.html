@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+mytasks
+</title>
+</head>
+<body>
+<nav>
+<ul>
+<li><a href='taskList'>My tasks</a></li>
+<li><a href="logout">logout</a></li>
+</ul>
+</nav><br>
+<h2>Create your tasks here</h1><br>
+
+<form method="post" action="{% url 'createTask' %}">
+    {% csrf_token %}
+<label for="title"> title </label><br>
+<input type = "text" id = "title" name="title" required><br>
+<label for="description"> description </label><br>
+<input id="description" name="description" required><br>
+<label for = "due_date"> due date </label><br>
+<input type="date" id="due_date" name="due_date" required><br>
+<label for="dropdown"> Priority </label>
+<select id = "dropdown" name="dropdown">
+<option value="Low">Low</option>
+<option value="Mediam">Mediam</option>
+<option value="High">High</option>
+</select><br>
+<input type="submit" value="done">
+</form>
+
+
+<p>{{message}}</p>
+</body>
+</html>

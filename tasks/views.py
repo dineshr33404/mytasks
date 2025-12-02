@@ -45,12 +45,34 @@ def register(request):
         return render(request, 'login.html', {'message': 'Registered successfully. Please login now.'})
     return render(request, 'signup.html', {'message': 'something went wrong, please try again'})
 
-#go to the tasks form page to create or edit
-def taskForm(request):
-    return render(request, 'taskForm.html')
+#go to the create form page to create
+def createForm(request):
+    return render(request, 'createForm.html')
 
 #create tasks
 def createTask(request):
+    try:
+        if request.method == 'POST':
+            title = request.POST.get('title')
+            description = request.POST.get('description')
+            due_date = request.POST.get('due_date')
+            priority = request.POST.get('dropdown')
+            data = Tasks.objects.create(title = title, description =description, due_date=due_date,is_completed=0, owner_id = request.session.get('storeId'))
+            return render(request, 'updateForm.html', {'data': data})
+        return render(request, 'createForm.html', {'message': 'something whent wrong.'})
+    except Exception as e:
+        return render(request, 'createForm.html', {'message': e})
+
+#edit page
+def taskEdit(request, id):
+    try:
+        data = Tasks.objects.filter(id=id).first()
+        return render(request, 'updateForm.html', {'data': data})
+    except Exception as e:
+        return render(request, 'tasks.html', {'message': e})
+
+#edit task
+def updateTask(request):
     try:
         if request.method == 'POST':
             title = request.POST.get('title')
@@ -60,25 +82,14 @@ def createTask(request):
             priority = request.POST.get('dropdown')
             is_completed= 1 if request.POST.get("complete") == "1" else 0
             task_id = request.POST.get("id")
-            if task_id:
-                Tasks.objects.filter(id=task_id).update(title = title, description =description, due_date=due_date,is_completed=is_completed, version=F('version')+1)
-                data = Tasks.objects.get(id=task_id)
-            else:
-                data = Tasks.objects.create(title = title, description =description, due_date=due_date,is_completed=0, owner_id = request.session.get('storeId'))
-            return render(request, 'taskForm.html', {'data': data, 'message':'hello'})
-        return render(request, 'taskForm.html', {'message': 'something whent wrong.'})
-    except Exception as e:
-        return render(request, 'taskForm.html', {'message': e})
-
-#edit page
-def taskEdit(request, id):
-    try:
-        data = Tasks.objects.filter(id=id).first()
-        return render(request, 'taskForm.html', {'data': data})
+            Tasks.objects.filter(id=task_id).update(title = title, description =description, due_date=due_date,is_completed=is_completed, version=F('version')+1)
+            data = Tasks.objects.get(id=task_id)
+            return render(request, 'updateForm.html', {'data': data})
+        return render(request, 'tasks.html', {'message': 'something whent wrong.'})
     except Exception as e:
         return render(request, 'tasks.html', {'message': e})
 
-
+#list tasks
 def task_list(request):
     try:
         today = now().date()

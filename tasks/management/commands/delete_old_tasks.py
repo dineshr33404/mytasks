@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **opts):
         cutoff = timezone.now() - timedelta(days=opts["days"])
-        qs = Tasks.objects.filter(is_completed=True, updated_at__lt=cutoff)
+        qs = Tasks.objects.filter(is_completed=1, updated_at__lt=cutoff)
 
         count = qs.count()
         if opts["hard"]:

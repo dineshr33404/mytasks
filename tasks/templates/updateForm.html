@@ -24,9 +24,9 @@ mytasks
 <input type="date" id="due_date" name="due_date" value="{{ data.due_date|date:'Y-m-d' }}" required><br>
 <label for="dropdown"> Priority </label>
 <select id = "dropdown" name="dropdown">
-<option {% if data.priority == "Low" %} selected {% endif %} value="Low">Low</option>
-<option {% if data.priority  == "Medium" %} selected {% endif %} value="Medium">Medium</option>
-<option {% if data.priority == "High" %} selected {% endif %} value="High">High</option>
+<option {% if data.priority == "1" %} selected {% endif %} value="1">Low</option>
+<option {% if data.priority  == "2" %} selected {% endif %} value="2">Medium</option>
+<option {% if data.priority == "3" %} selected {% endif %} value="3">High</option>
 </select><br>
 {% if data.is_completed == 0 %}
 <input type="checkbox" id="complete" name="complete" value = "1">is completed</br>

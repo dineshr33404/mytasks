@@ -20,9 +20,9 @@ mytasks
 </nav>
 
 <table id = "tableId">
-<tr><th>Title</th><th>Due Date</th><th>Status</th><th>version</th><th>Action</th></tr>
+<tr><th>Title</th><th>Description</th><th>Due Date</th><th>Status</th><th>version</th><th>Priority</th><th>Action</th></tr>
 {% for data in fetchData %}
-<tr id="{{data.id}}"><td>{{data.title}}</td><td>{{data.due_date}}</td><td>{{data.status}}</td><td>{{data.version}}</td><td> <a data-id="{{data.id}}" href="task/edit/{{data.id}}">Edit</a><br> <a data-id="{{data.id}}" data-delete="{{data.is_deleted}}" href="#" class="delete-task"> {% if data.is_deleted %} Revert {% else %} Delete {% endif %}</a> </td></tr>
+<tr id="{{data.id}}"><td>{{data.title}}</td><td>{{data.description}}</td><td>{{data.due_date}}</td><td>{{data.status}}</td><td>{{data.version}}</td><td>{{data.priority_name}}</td><td> <a data-id="{{data.id}}" href="task/edit/{{data.id}}">Edit</a><br> <a data-id="{{data.id}}" data-delete="{{data.is_deleted}}" href="#" class="delete-task"> {% if data.is_deleted %} Revert {% else %} Delete {% endif %}</a> </td></tr>
 {% endfor %}
 </table><br>
 

@@ -14,7 +14,7 @@ def logIn(request):
 
 #check login
 def loggingin(request):
-    if request.method == 'POST':
+    try:
         username= request.POST.get('email')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
@@ -24,13 +24,14 @@ def loggingin(request):
             return redirect("taskList")
         else:
             return render(request, 'login.html', {'message': 'invalid email or password'})
+    except Exception as e:
         return render(request, 'login.html', {'message': 'something went wrong'})
 
 def signup(request):
     return render(request, 'signup.html')
 
 def register(request):
-    if request.method == 'POST':
+    try:
         email = request.POST.get('email')
         name = request.POST.get('name')
         password = request.POST.get('password')
@@ -43,7 +44,8 @@ def register(request):
             return render(request, 'signup.html', {'message': 'new password and confirm password does not match'})
         User.objects.create_user(username=email, email=email, password=password)
         return render(request, 'login.html', {'message': 'Registered successfully. Please login now.'})
-    return render(request, 'signup.html', {'message': 'something went wrong, please try again'})
+    except Exception as e:
+        return render(request, 'signup.html', {'message': 'something went wrong, please try again'})
 
 #go to the create form page to create
 def createForm(request):
@@ -57,7 +59,9 @@ def createTask(request):
             description = request.POST.get('description')
             due_date = request.POST.get('due_date')
             priority = request.POST.get('dropdown')
-            data = Tasks.objects.create(title = title, description =description, due_date=due_date,is_completed=0, owner_id = request.session.get('storeId'))
+            if not priority or not title or not description or not due_date:
+                return render(request, 'createForm.html', {'message': 'please fill all the fields'})
+            data = Tasks.objects.create(title = title, description =description, priority=priority, due_date=due_date, owner_id = request.session.get('storeId'))
             return render(request, 'updateForm.html', {'data': data})
         return render(request, 'createForm.html', {'message': 'something whent wrong.'})
     except Exception as e:
@@ -80,9 +84,12 @@ def updateTask(request):
             due_date = request.POST.get('due_date')
             is_complete = request.POST.get('complete')
             priority = request.POST.get('dropdown')
-            is_completed= 1 if request.POST.get("complete") == "1" else 0
+            is_completed= True if request.POST.get("complete") == "1" else False
             task_id = request.POST.get("id")
-            Tasks.objects.filter(id=task_id).update(title = title, description =description, due_date=due_date,is_completed=is_completed, version=F('version')+1)
+            if not title or not description or not due_date or not priority: 
+                data = Tasks.objects.get(id=task_id)
+                return render(request, 'updateForm.html', {'message': 'please fill all the fields', 'data': data})
+            Tasks.objects.filter(id=task_id).update(title = title, description =description, priority=priority, due_date=due_date,is_completed=is_completed, version=F('version')+1)
             data = Tasks.objects.get(id=task_id)
             return render(request, 'updateForm.html', {'data': data})
         return render(request, 'tasks.html', {'message': 'something whent wrong.'})
@@ -93,14 +100,10 @@ def updateTask(request):
 def task_list(request):
     try:
         today = now().date()
-        if request.user.is_superuser: 
-            task = Tasks.objects.filter(owner_id=request.session.get('storeId')).annotate(
-                status=Case(When(due_date__lt=today, then=Value("Overdue")), default=Value("In Progress"), output_field=CharField())
-            ).order_by('-created_at')
-        else:
-            task = Tasks.objects.filter(owner_id=request.user.id, is_completed = 0, is_deleted = False).annotate(
-                status=Case(When(due_date__lt=today, then=Value("Overdue")), default=Value("In Progress"), output_field=CharField())
-            ).order_by('-created_at')
+        task = Tasks.objects.visible_to(request.user, request.session.get('storeId')).annotate(
+            status=Case(When(due_date__lt=today, then=Value("Overdue")), default=Value("In Progress"), output_field=CharField()),
+            priority_name=Case(When(priority=1, then=Value("Low")), When(priority=2, then=Value("Medium")), default=Value("High"), output_field=CharField())
+        ).order_by('-priority')
         paginator = Paginator(task, 10) 
 
         page_number = request.GET.get('page')
@@ -143,10 +146,11 @@ def viewUserTasks(request, id):
     try:
         if not request.user.is_superuser:
             return render(request, 'login.html', {'message', 'Something whent wrong, please login again'})
+        request.session['storageId'] = id
         return redirect('taskList')
     except Exception as e:
         return render(request, 'userList.html', {'message': e})
-        request.session['storageId'] = id
+
 
 #logout
 def logout(request):
